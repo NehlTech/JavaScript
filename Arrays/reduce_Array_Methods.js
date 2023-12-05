@@ -7,7 +7,7 @@
  *
  */
 
-const numbers = [1, 2, 33, 3, 4, 5];
+// const numbers = [1, 2, 33, 3, 4, 5];
 
 // Using general function body
 
@@ -18,17 +18,42 @@ const numbers = [1, 2, 33, 3, 4, 5];
 // console.log(total);
 
 // Using arrow function
-const total2 = numbers.reduce((acc, value) => acc + value);
-console.log(total2);
+// const total2 = numbers.reduce((acc, value) => acc + value);
+// console.log(total2);
 
 // Finding the max number of an array
 
-const maxNum = numbers.reduce((accumulator, value) => {
-  if (accumulator > value) {
-    return accumulator;
-  } else {
-    return value;
-  }
-});
+// const maxNum = numbers.reduce((accumulator, value) => {
+//   if (accumulator > value) {
+//     return accumulator;
+//   } else {
+//     return value;
+//   }
+// });
 
-console.log(maxNum);
+// console.log(maxNum);
+
+const store = [
+  {
+    product: "laptop",
+    value: 1000,
+    count: 3,
+  },
+  {
+    product: "desktop",
+    value: 1500,
+    count: 4,
+  },
+  {
+    product: "mobile",
+    value: 500,
+    count: 10,
+  },
+];
+
+const totalValueStore = store.reduce(
+  (acc, item) => acc + item.value * item.count,
+  0
+);
+
+console.log(totalValueStore);
