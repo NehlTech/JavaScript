@@ -152,10 +152,16 @@ const eurToUsd = 1.1;
 // });
 // console.log(usd);
 
-const usd = movements.map(
-  (transaction, i) =>
-    `Transaction ${i + 1}: You ${
-      transaction > 0 ? "deposited" : "Withdrew"
-    } ${Math.abs(transaction)}`
+// const usd = movements.map(
+//   (transaction, i) =>
+//     `Transaction ${i + 1}: You ${
+//       transaction > 0 ? "deposited" : "Withdrew"
+//     } ${Math.abs(transaction)}`
+// );
+// console.log(usd);
+
+const totalBalance = movements.reduce(
+  (acc, currentValue) => acc + currentValue,
+  0
 );
-console.log(usd);
+console.log(totalBalance);
