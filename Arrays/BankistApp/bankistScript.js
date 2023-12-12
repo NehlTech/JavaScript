@@ -77,7 +77,7 @@ const displayTransactions = function (transactions) {
         ${type}
       </div>
       <div class="movements__value">
-       ${transfer + "$"}
+       ${transfer + "€"}
       </div>
 
     </div>
@@ -90,10 +90,33 @@ displayTransactions(account1.transactions);
 
 const calDisplayBalance = function (transactions) {
   const balance = transactions.reduce((acc, trans) => acc + trans, 0);
-  labelBalance.textContent = `${balance} EUR`;
+  labelBalance.textContent = `${balance} €`;
 };
 calDisplayBalance(account1.transactions);
 
+const calcDisplaySummary = function (transactions) {
+  //income
+  const incomes = transactions
+    .filter((trans) => trans > 0)
+    .reduce((acc, trans) => acc + trans, 0);
+  labelSumIn.textContent = `${incomes}€`;
+
+  //withdrawals
+  const out = transactions
+    .filter((trans) => trans < 0)
+    .reduce((acc, trans) => acc + trans, 0);
+  labelSumOut.textContent = `${Math.abs(out)}€`;
+
+  //interest
+  const interest = transactions
+    .filter((depo) => depo > 0)
+    .map((interest) => interest * 0.012)
+    .filter((interest) => interest >= 1) //excluding interest less than 1
+    .reduce((acc, interest) => acc + interest, 0);
+  labelSumInterest.textContent = `${interest}€`;
+};
+
+calcDisplaySummary(account1.transactions);
 /**Computing Username */
 
 // const user = "Steven Thomas Williams"; // stw
