@@ -143,3 +143,20 @@ createUsernames(accounts);
 
 // const withdrawals = transactions.filter((mov) => mov < 0);
 // console.log(withdrawals);
+
+/**
+ * Taking all the transactions and convert
+ * them into euros from dollars
+ * using Chaining methods
+ *
+ * Date: 12th December, 2023
+ * Time: 00:19
+ */
+
+const eurToUsd = 1.1;
+
+const totalDepositUSD = transactions
+  .filter((depo) => depo > 0)
+  .map((deposit) => deposit * eurToUsd)
+  .reduce((acc, deposit) => acc + deposit, 0);
+console.log(totalDepositUSD);
