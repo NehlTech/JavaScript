@@ -1,3 +1,4 @@
+"use strict";
 /***********************************
  * 23/11/23
  * Bankist App
@@ -86,37 +87,38 @@ const displayTransactions = function (transactions) {
   });
 };
 
-displayTransactions(account1.transactions);
+// displayTransactions(account1.transactions);
 
 const calDisplayBalance = function (transactions) {
   const balance = transactions.reduce((acc, trans) => acc + trans, 0);
   labelBalance.textContent = `${balance} €`;
 };
-calDisplayBalance(account1.transactions);
+// calDisplayBalance(account1.transactions);
 
-const calcDisplaySummary = function (transactions) {
+const calcDisplaySummary = function (acc) {
   //income
-  const incomes = transactions
+  const incomes = acc.transactions
     .filter((trans) => trans > 0)
     .reduce((acc, trans) => acc + trans, 0);
   labelSumIn.textContent = `${incomes}€`;
 
   //withdrawals
-  const out = transactions
+  const out = acc.transactions
     .filter((trans) => trans < 0)
     .reduce((acc, trans) => acc + trans, 0);
   labelSumOut.textContent = `${Math.abs(out)}€`;
 
   //interest
-  const interest = transactions
-    .filter((depo) => depo > 0)
-    .map((interest) => interest * 0.012)
+  const interest = acc.transactions
+    .filter((trans) => trans > 0)
+    .map((depo) => depo * acc.interestRate)
     .filter((interest) => interest >= 1) //excluding interest less than 1
     .reduce((acc, interest) => acc + interest, 0);
   labelSumInterest.textContent = `${interest}€`;
 };
 
-calcDisplaySummary(account1.transactions);
+// calcDisplaySummary(account1.transactions);
+
 /**Computing Username */
 
 // const user = "Steven Thomas Williams"; // stw
@@ -162,6 +164,40 @@ const createUsernames = function (accs) {
 };
 
 createUsernames(accounts);
+
+/*************    LOG IN    **************** */
+// Event handler
+
+let currentAccount;
+
+btnLogin.addEventListener("click", function (e) {
+  // Prevent form from submitting
+  e.preventDefault();
+
+  currentAccount = accounts.find(
+    (acc) => acc.username === inputLoginUsername.value
+  );
+  console.log(currentAccount);
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Display welcome message
+    labelWelcome.textContent = `Welcome back, 
+    ${currentAccount.owner.split(" ")[0]}`; //This will take first name of the owner
+
+    containerApp.style.opacity = 100;
+    // Clear input fields
+    inputLoginUsername.value = inputLoginPin.value = "";
+    // To make the fields lose its focus
+    inputLoginPin.blur();
+
+    // Display transactions
+    displayTransactions(currentAccount.transactions);
+    // Display balance
+    calDisplayBalance(currentAccount.transactions);
+    // Display summary
+    calcDisplaySummary(currentAccount);
+  }
+});
 // console.log(accounts);
 
 // const withdrawals = transactions.filter((mov) => mov < 0);
@@ -182,4 +218,4 @@ const totalDepositUSD = transactions
   .filter((depo) => depo > 0)
   .map((deposit) => deposit * eurToUsd)
   .reduce((acc, deposit) => acc + deposit, 0);
-console.log(totalDepositUSD);
+// console.log(totalDepositUSD);
