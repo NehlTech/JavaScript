@@ -9,7 +9,7 @@
  * not a desired outcome
  * To get a desired outcome we provide a comparison function
  */
-const numbers = [74, 18, 10, 5, 84, 24, 105];
+// const numbers = [74, 18, 10, 5, 84, 24, 105];
 // console.log(numbers.sort()); // Output: 10, 105, 18, 24, 5, 74, 84
 /**
  * Using the comparison function
@@ -29,4 +29,26 @@ const numbers = [74, 18, 10, 5, 84, 24, 105];
 // console.log(numbers.sort(compareSort));
 
 /** Using arrow function  */
-console.log(numbers.sort((a, b) => a - b)); //Output: 5, 10, 18, 24, 74, 84, 105
+// console.log(numbers.sort((a, b) => a - b)); //Output: 5, 10, 18, 24, 74, 84, 105
+
+/**
+ * Sorting an array of objects
+ *
+ */
+
+const products = [
+  {
+    name: "laptop",
+    price: 1000,
+  },
+  {
+    name: "desktop",
+    price: 1500,
+  },
+  {
+    name: "phone",
+    price: 500,
+  },
+];
+
+console.log(products.sort((a, b) => a.price - b.price));
