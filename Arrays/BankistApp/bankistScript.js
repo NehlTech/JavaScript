@@ -66,10 +66,14 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
-const displayTransactions = function (transactions) {
+const displayTransactions = function (transactions, sort = false) {
   containerMovements.innerHTML = "";
 
-  transactions.forEach(function (transfer, i) {
+  const trans = sort
+    ? transactions.slice().sort((a, b) => a - b)
+    : transactions;
+
+  trans.forEach(function (transfer, i) {
     const type = transfer > 0 ? "deposit" : "withdrawal";
     const html = `
     <div class="movements__row">
@@ -239,7 +243,7 @@ btnLoan.addEventListener("click", function (e) {
   const amount = Number(inputLoanAmount.value);
   if (
     amount > 0 &&
-    currentAccount.transactions.some((tans) => trans >= amount * 0.1)
+    currentAccount.transactions.some((trans) => trans >= amount * 0.1)
   ) {
     // Add transactions
     currentAccount.transactions.push(amount);
@@ -293,3 +297,13 @@ const totalDepositUSD = transactions
   .map((deposit) => deposit * eurToUsd)
   .reduce((acc, deposit) => acc + deposit, 0);
 // console.log(totalDepositUSD);
+
+/**
+ * Implementing Sort functionality
+ */
+let sorted = false;
+btnSort.addEventListener("click", function (e) {
+  e.preventDefault();
+  displayTransactions(currentAccount.transactions, !sorted);
+  sorted = !sorted;
+});
