@@ -68,4 +68,48 @@ const numDeposit1000 = accounts
 const numDeposit1000_2 = accounts
   .flatMap((acc) => acc.transactions)
   .reduce((accum, currValue) => (currValue >= 1000 ? accum + 1 : accum), 0);
-console.log(numDeposit1000_2);
+// console.log(numDeposit1000_2);
+
+/**
+ * Example 3
+ *
+ * To creat an Object which contains the sum of deposits
+ * and the Withdrawals
+ */
+
+const sums = accounts
+  .flatMap((accs) => accs.transactions)
+  .reduce(
+    (sums, currValue) => {
+      //   currValue > 0
+      //     ? (sums.deposits += currValue)
+      //     : (sums.withdrawals += currValue);
+      sums[currValue > 0 ? "deposits" : "withdrawals"] += currValue;
+      return sums;
+    },
+    { deposits: 0, withdrawals: 0 }
+  );
+console.log(sums);
+
+/**
+ * Example 4
+ *
+ * To create a TitleCase
+ */
+
+const convertTitleCase = function (title) {
+  const capitalize = (str) => str[0].toUpperCase() + str.slice(1);
+
+  const exceptions = ["a", "an", "and", "the", "but", "or", "on", "in", "with"];
+
+  const titleCase = title
+    .toLowerCase()
+    .split(" ")
+    .map((word) => (exceptions.includes(word) ? word : capitalize(word)))
+    .join(" ");
+  return capitalize(titleCase);
+};
+
+console.log(convertTitleCase("this is a nice title"));
+console.log(convertTitleCase("this is a LONG title but not too long"));
+console.log(convertTitleCase("and here is another title with an EXAMPLE"));
