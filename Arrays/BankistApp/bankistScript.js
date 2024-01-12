@@ -22,9 +22,9 @@ const account1 = {
     "2020-01-28T09:15:04.904Z",
     "2020-04-01T10:17:24.185Z",
     "2020-05-08T14:11:59.604Z",
-    "2020-05-27T17:01:17.194Z",
-    "2020-07-11T23:36:17.929Z",
-    "2020-07-12T10:51:36.790Z",
+    "2024-01-04T17:01:17.194Z",
+    "2023-12-25T23:36:17.929Z",
+    "2024-01-09T10:51:36.790Z",
   ],
   currency: "EUR",
   locale: "pt-PT", // de-DE
@@ -41,9 +41,9 @@ const account2 = {
     "2019-12-25T06:04:23.907Z",
     "2020-01-25T14:18:46.235Z",
     "2020-02-05T16:33:06.386Z",
-    "2020-04-10T14:43:26.374Z",
-    "2020-06-25T18:49:59.371Z",
-    "2020-07-26T12:01:20.894Z",
+    "2023-11-10T14:43:26.374Z",
+    "2023-12-25T18:49:59.371Z",
+    "2024-01-09T12:01:20.894Z",
   ],
   currency: "USD",
   locale: "en-US",
@@ -91,23 +91,67 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
-const displayTransactions = function (transactions, sort = false) {
+// Global variables
+let currentAccount;
+
+/**************** FUNCTIONS ****************/
+
+const formatTransactionDate = function (date, locale) {
+  const calcDaysPassed = (date1, date2) =>
+    Math.round(Math.abs((date2 - date1) / (1000 * 60 * 60 * 24)));
+
+  const daysPassed = calcDaysPassed(new Date(), date);
+  console.log(daysPassed);
+
+  if (daysPassed === 0) {
+    return "Today";
+  } else if (daysPassed === 1) {
+    return "Yesterday";
+  } else if (daysPassed <= 7) {
+    return `${daysPassed} days ago`;
+  } else {
+    /**const day = `${date.getDate()}`.padStart(2, 0);
+    const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`; */
+    return Intl.DateTimeFormat(locale).format(date);
+  }
+};
+
+const formatCurrency = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+  }).format(value);
+};
+
+const displayTransactions = function (acc, sort = false) {
   containerMovements.innerHTML = "";
 
   const trans = sort
-    ? transactions.slice().sort((a, b) => a - b)
-    : transactions;
+    ? acc.transactions.slice().sort((a, b) => a - b)
+    : acc.transactions;
 
   trans.forEach(function (transfer, i) {
     const type = transfer > 0 ? "deposit" : "withdrawal";
+    const date = new Date(acc.movementsDates[i]);
+    const displayDate = formatTransactionDate(date, acc.locale);
+
+    const formattedTrans = formatCurrency(transfer, acc.locale, acc.currency);
+
+    // new Intl.NumberFormat(acc.locale, {
+    //   style: "currency",
+    //   currency: acc.currency,
+    // }).format(transfer);
     const html = `
     <div class="movements__row">
       <div class="movements__type movements__type--${type}">
         ${i + 1}
         ${type}
       </div>
+      <div className="movements__date">${displayDate}</div>
       <div class="movements__value">
-       ${transfer.toFixed(2) + "€"}
+       ${formattedTrans}
       </div>
 
     </div>
@@ -122,7 +166,14 @@ const calDisplayBalance = function (acc) {
   // const balance = acc.transactions.reduce((acc, trans) => acc + trans, 0);
   acc.balance = acc.transactions.reduce((acc, trans) => acc + trans, 0);
   // acc.balance = balance
-  labelBalance.textContent = `${acc.balance.toFixed(2)} €`;
+
+  labelBalance.textContent = formatCurrency(
+    acc.balance,
+    acc.locale,
+    acc.currency
+  );
+
+  // labelBalance.textContent = `${acc.balance.toFixed(2)} €`;
 };
 // calDisplayBalance(account1.transactions);
 
@@ -131,13 +182,21 @@ const calcDisplaySummary = function (acc) {
   const incomes = acc.transactions
     .filter((trans) => trans > 0)
     .reduce((acc, trans) => acc + trans, 0);
-  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
+  labelSumIn.textContent = formatCurrency(incomes, acc.locale, acc.currency);
+
+  // `${incomes.toFixed(2)}€`;
 
   //withdrawals
   const out = acc.transactions
     .filter((trans) => trans < 0)
     .reduce((acc, trans) => acc + trans, 0);
-  labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`;
+  labelSumOut.textContent = formatCurrency(
+    Math.abs(out),
+    acc.locale,
+    acc.currency
+  );
+
+  // `${Math.abs(out).toFixed(2)}€`;
 
   //interest
   const interest = acc.transactions
@@ -145,7 +204,13 @@ const calcDisplaySummary = function (acc) {
     .map((depo) => depo * acc.interestRate)
     .filter((interest) => interest >= 1) //excluding interest less than 1
     .reduce((acc, interest) => acc + interest, 0);
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  labelSumInterest.textContent = formatCurrency(
+    interest,
+    acc.locale,
+    acc.currency
+  );
+
+  // `${interest.toFixed(2)}€`;
 };
 
 // calcDisplaySummary(account1.transactions);
@@ -199,7 +264,7 @@ createUsernames(accounts);
 // Update Ui
 const updateUI = function (acc) {
   // Display transactions
-  displayTransactions(acc.transactions);
+  displayTransactions(acc);
   // Display balance
   calDisplayBalance(acc);
   // Display summary
@@ -209,7 +274,9 @@ const updateUI = function (acc) {
 /*********** Event handlers  ***********/
 
 /*************    LOG IN    *****************/
-let currentAccount;
+// let currentAccount;
+
+// Experimenting the internalization API
 
 btnLogin.addEventListener("click", function (e) {
   // Prevent form from submitting
@@ -218,7 +285,7 @@ btnLogin.addEventListener("click", function (e) {
   currentAccount = accounts.find(
     (acc) => acc.username === inputLoginUsername.value
   );
-  console.log(currentAccount);
+  // console.log(currentAccount);
 
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     // Display welcome message
@@ -226,6 +293,34 @@ btnLogin.addEventListener("click", function (e) {
     ${currentAccount.owner.split(" ")[0]}`; //This will take first name of the owner
 
     containerApp.style.opacity = 100;
+
+    // Create current date and time
+    // const now = new Date();
+    // const day = `${now.getDate()}`.padStart(2, 0);
+    // const month = `${now.getMonth() + 1}`.padStart(2, 0);
+    // const year = now.getFullYear();
+    // const hour = `${now.getHours()}`.padStart(2, 0);
+    // const min = `${now.getMinutes()}`.padStart(2, 0);
+    // labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+
+    const now = new Date();
+    const options = {
+      day: "numeric",
+      month: "long", // short, long
+      year: "numeric", // 2-digit
+      hour: "numeric",
+      minute: "numeric",
+      weekday: "short", // it has long, short and narrow
+    };
+
+    // const locale = navigator.language;
+    // console.log(locale);
+
+    labelDate.textContent = Intl.DateTimeFormat(
+      currentAccount.locale,
+      options
+    ).format(now);
+
     // Clear input fields
     inputLoginUsername.value = inputLoginPin.value = "";
     // To make the fields lose its focus
@@ -238,24 +333,30 @@ btnLogin.addEventListener("click", function (e) {
 /*************    TRANSFER MONEY   **************** */
 btnTransfer.addEventListener("click", function (e) {
   e.preventDefault();
+
+  const amount = Number(inputTransferAmount.value);
   const transferTo = accounts.find(
     (acc) => acc.username === inputTransferTo.value
   );
-  const amount = Number(inputTransferAmount.value);
   // console.log(amount, transferTo);
 
   inputTransferAmount.value = inputTransferTo.value = "";
-  inputTransferAmount.blur();
+  // inputTransferAmount.blur();
 
   if (
     amount > 0 &&
     transferTo &&
     currentAccount.balance >= amount &&
-    transferTo.username !== currentAccount.username
+    transferTo?.username !== currentAccount.username
   ) {
     // Doing the transfer
     currentAccount.transactions.push(-amount);
     transferTo.transactions.push(amount);
+
+    // Add transfer date
+    currentAccount.movementsDates.push(new Date().toISOString());
+    transferTo.movementsDates.push(new Date().toISOString());
+
     // updateUI
     updateUI(currentAccount);
   }
@@ -272,6 +373,9 @@ btnLoan.addEventListener("click", function (e) {
   ) {
     // Add transactions
     currentAccount.transactions.push(amount);
+
+    // Add loan date
+    currentAccount.movementsDates.push(new Date().toISOString());
 
     // Update UI
     updateUI(currentAccount);
