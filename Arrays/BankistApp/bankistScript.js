@@ -92,7 +92,7 @@ const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
 // Global variables
-let currentAccount;
+let currentAccount, timer;
 
 /**************** FUNCTIONS ****************/
 
@@ -271,6 +271,28 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc);
 };
 
+// Start LogOut function
+
+const startLogOutTimer = function () {
+  let time = 300; // 300 seconds
+  const tickTimer = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, "0");
+    const sec = String(time % 60).padStart(2, 0);
+    labelTimer.textContent = `${min}:${sec}`;
+
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = "Log in to get started";
+      containerApp.style.opacity = 0;
+    }
+    time--;
+  };
+
+  tickTimer();
+  timer = setInterval(tickTimer, 1000);
+  return timer;
+};
+
 /*********** Event handlers  ***********/
 
 /*************    LOG IN    *****************/
@@ -325,6 +347,10 @@ btnLogin.addEventListener("click", function (e) {
     inputLoginUsername.value = inputLoginPin.value = "";
     // To make the fields lose its focus
     inputLoginPin.blur();
+
+    // Start the timer
+    if (timer) clearInterval(timer);
+    timer = startLogOutTimer();
     // updateUI
     updateUI(currentAccount);
   }
@@ -359,6 +385,9 @@ btnTransfer.addEventListener("click", function (e) {
 
     // updateUI
     updateUI(currentAccount);
+    // Reset timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 });
 
@@ -371,16 +400,21 @@ btnLoan.addEventListener("click", function (e) {
     amount > 0 &&
     currentAccount.transactions.some((trans) => trans >= amount * 0.1)
   ) {
-    // Add transactions
-    currentAccount.transactions.push(amount);
+    setTimeout(function () {
+      // Add transactions
+      currentAccount.transactions.push(amount);
 
-    // Add loan date
-    currentAccount.movementsDates.push(new Date().toISOString());
+      // Add loan date
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    // Update UI
-    updateUI(currentAccount);
+      // Update UI
+      updateUI(currentAccount);
+    }, 2500);
   }
   inputLoanAmount.value = " ";
+  // Reset timer
+  clearInterval(timer);
+  timer = startLogOutTimer();
 });
 
 /*********** CLOSE ACCOUNT  ************/
