@@ -72,10 +72,16 @@ class App {
   #mapZoomLevel = 13;
   #mapEvent;
   #workouts = [];
-  constructor() {
-    this._getPosition();
-    form.addEventListener('submit', this._newWorkOut.bind(this));
 
+  constructor() {
+    // Get user's position
+    this._getPosition();
+
+    // Get data from local storage
+    this._getLocalStorage();
+
+    // Attach event handlesrs
+    form.addEventListener('submit', this._newWorkOut.bind(this));
     // Toggle between Cadence and Elevation
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
@@ -103,9 +109,15 @@ class App {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.#map);
+
     //when the map is clicked
     this.#map.on('click', this._showForm.bind(this));
+
+    this.#workouts.forEach(workouts => {
+      this._renderWorkoutMarker(workouts);
+    });
   }
+
   _showForm(mapE) {
     this.#mapEvent = mapE;
     form.classList.remove('hidden');
@@ -181,6 +193,9 @@ class App {
 
     // Hide form + clear input fields
     this._hideForm();
+
+    // Set LocalStorage to all workouts
+    this._setLocalStorage();
   }
   _renderWorkoutMarker(workout) {
     L.marker(workout.coords)
@@ -264,7 +279,25 @@ class App {
       },
     });
     // using the public interface
-    workout._click();
+    // workout._click();
+  }
+  _setLocalStorage() {
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+  }
+
+  _getLocalStorage() {
+    const data = JSON.parse(localStorage.getItem('workouts'));
+    if (!data) return;
+    this.#workouts = data;
+
+    this.#workouts.forEach(workout => {
+      this._renderWorkout(workout);
+    });
+  }
+
+  reset() {
+    localStorage.removeItem('workouts');
+    location.reload();
   }
 }
 
