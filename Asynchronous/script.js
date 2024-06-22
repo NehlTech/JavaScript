@@ -124,7 +124,7 @@ const renderError = function (msg) {
  * @param {*} country - The url of the country (string)
  * @returns {string} - The name of the country
  */
-
+/*
 const getJSON = function (url, errMessage = 'Something went wrong') {
   return fetch(url).then(response => {
     // console.log(response);
@@ -134,6 +134,7 @@ const getJSON = function (url, errMessage = 'Something went wrong') {
     return response.json();
   });
 };
+*/
 // Country 1
 // const getCountryData = country =>
 //   fetch(`https://restcountries.com/v3.1/name/${country}`)
@@ -206,7 +207,7 @@ const getCountryData = countryName =>
 // Create a function() whereAmI which takes as inputs a lat and long
 // `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`
 
-const whereAmI = function (lat, lng) {
+/* const whereAmI = function (lat, lng) {
   fetch(
     `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`
   )
@@ -233,3 +234,113 @@ whereAmI(-34.93129, 138.59669);
 whereAmI(52.508, 13.385);
 whereAmI(19.037, 72.873);
 whereAmI(-33.933, 18.474);
+*/
+
+/**
+ * Promisifying the Geolocation API
+ * Lesson 261
+ */
+
+// navigator.geolocation.getCurrentPosition(
+//   position => console.log(position),
+//   err => console.error(err)
+// );
+
+// const getPosition = function () {
+//   return new Promise(function (resolve, reject) {
+//     navigator.geolocation.getCurrentPosition(
+//       position => resolve(position),
+//       err => reject(err)
+//     );
+//   });
+// };
+
+/*
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+*/
+
+// getPosition().then(pos => console.log(pos));
+/*
+const whereAmI = function () {
+  getPosition()
+    .then(pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      return fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`
+      );
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`Problem with geocoding ${res.status}`);
+      return res.json();
+    }) // this will return a promise
+    .then(data => {
+      console.log(data);
+      console.log(`You are in ${data.city}, ${data.countryName}`);
+
+      return fetch(`https://restcountries.com/v3.1/name/${data.countryName}`);
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Country not found ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(data => renderCountry(data[0]))
+    .catch(err => console.error(`${err.message}`));
+};
+
+btn.addEventListener('click', whereAmI);
+*/
+
+/**
+ * Coding Challenge 2
+ * Lesson 262
+ */
+
+const wait = function (seconds) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, seconds * 1000);
+  });
+};
+
+const imgContainer = document.querySelector('.images');
+
+const createImg = function (imgPath) {
+  return new Promise(function (resolve, reject) {
+    const img = document.createElement('img');
+    img.src = imgPath;
+
+    img.addEventListener('load', function () {
+      imgContainer.append(img);
+      resolve(img);
+    });
+    img.addEventListener('error', function () {
+      reject(new Error('Image not found'));
+    });
+  });
+};
+
+let currentImage;
+createImg('img/img-1.jpg')
+  .then(img => {
+    currentImage = img;
+    console.log('Image 1 loaded');
+    return wait(2);
+  })
+  .then(() => {
+    currentImage.style.display = 'none';
+    return createImg('img/img-2.jpg');
+  })
+  .then(img => {
+    currentImage = img;
+    console.log('Image 2 loaded');
+    return wait(2);
+  })
+  .then(() => {
+    currentImage.style.display = 'none';
+  })
+  .catch(err => console.error(err));
