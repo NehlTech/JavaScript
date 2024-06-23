@@ -301,7 +301,7 @@ btn.addEventListener('click', whereAmI);
  * Lesson 262
  */
 
-const wait = function (seconds) {
+/*const wait = function (seconds) {
   return new Promise(function (resolve) {
     setTimeout(resolve, seconds * 1000);
   });
@@ -344,3 +344,45 @@ createImg('img/img-1.jpg')
     currentImage.style.display = 'none';
   })
   .catch(err => console.error(err));
+*/
+/** Getting the user current position */
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+/**
+ *
+ * @param {*} country The url of the country (string)
+ * @returns {string} - The name of the country
+ */
+
+const whereAmI = async function () {
+  try {
+    //Geolocatoin
+    const pos = await getPosition();
+    const { latitude: lat, longitude: lng } = pos.coords;
+
+    //Reverse Geocoding
+    const resGeo = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`
+    );
+
+    if (!resGeo.ok) throw new Error('Problem getting location data');
+    const dataGeo = await resGeo.json();
+    console.log(dataGeo);
+
+    //Country data
+    const res = await fetch(
+      `https://restcountries.com/v3.1/name/${dataGeo.countryName}`
+    );
+    if (!res.ok) throw new Error('Problem getting country');
+    const data = await res.json();
+    console.log(data);
+    renderCountry(data[0]);
+  } catch (error) {
+    console.error(`err ${error} 💥`);
+    renderError(`💥 ${err.message}`);
+  }
+};
+whereAmI();
