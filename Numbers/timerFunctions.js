@@ -30,9 +30,13 @@ const foodTimer = setTimeout(
   ...food
 );
 if (food.includes("Okoro")) clearTimeout(foodTimer);
+
 // SETINTERVAL FUNCTION
-let ti = setInterval(function () {
-  let now = new Date();
-  console.log(now);
-}, 1000);
-clearInterval(ti);
+// let ti = setInterval(function () {
+//   let now = new Date();
+//   console.log(now);
+// }, 1000);
+// clearInterval(ti);
+
+timers = setInterval(() => console.log(new Date()), 1000);
+clearInterval(timers);

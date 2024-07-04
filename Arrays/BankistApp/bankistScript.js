@@ -93,7 +93,7 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 // Global variables
 let currentAccount, timer;
-
+let sorted = false;
 /**************** FUNCTIONS ****************/
 
 const formatTransactionDate = function (date, locale) {
@@ -101,7 +101,7 @@ const formatTransactionDate = function (date, locale) {
     Math.round(Math.abs((date2 - date1) / (1000 * 60 * 60 * 24)));
 
   const daysPassed = calcDaysPassed(new Date(), date);
-  console.log(daysPassed);
+  // console.log(daysPassed);
 
   if (daysPassed === 0) {
     return "Today";
@@ -118,12 +118,16 @@ const formatTransactionDate = function (date, locale) {
   }
 };
 
+// Format Currency Function
+
 const formatCurrency = function (value, locale, currency) {
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: currency,
   }).format(value);
 };
+
+// Display transaction function
 
 const displayTransactions = function (acc, sort = false) {
   containerMovements.innerHTML = "";
@@ -162,6 +166,7 @@ const displayTransactions = function (acc, sort = false) {
 
 // displayTransactions(account1.transactions);
 
+// Display Balance function
 const calDisplayBalance = function (acc) {
   // const balance = acc.transactions.reduce((acc, trans) => acc + trans, 0);
   acc.balance = acc.transactions.reduce((acc, trans) => acc + trans, 0);
@@ -177,6 +182,7 @@ const calDisplayBalance = function (acc) {
 };
 // calDisplayBalance(account1.transactions);
 
+// Display Summary function
 const calcDisplaySummary = function (acc) {
   //income
   const incomes = acc.transactions
@@ -261,7 +267,7 @@ const createUsernames = function (accs) {
 
 createUsernames(accounts);
 
-// Update Ui
+// Update Ui function
 const updateUI = function (acc) {
   // Display transactions
   displayTransactions(acc);
@@ -298,7 +304,7 @@ const startLogOutTimer = function () {
 /*************    LOG IN    *****************/
 // let currentAccount;
 
-// Experimenting the internalization API
+// Login button function
 
 btnLogin.addEventListener("click", function (e) {
   // Prevent form from submitting
@@ -464,7 +470,7 @@ const totalDepositUSD = transactions
 /**
  * Implementing Sort functionality
  */
-let sorted = false;
+
 btnSort.addEventListener("click", function (e) {
   e.preventDefault();
   displayTransactions(currentAccount.transactions, !sorted);

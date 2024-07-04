@@ -124,7 +124,7 @@ const renderError = function (msg) {
  * @param {*} country - The url of the country (string)
  * @returns {string} - The name of the country
  */
-/*
+
 const getJSON = function (url, errMessage = 'Something went wrong') {
   return fetch(url).then(response => {
     // console.log(response);
@@ -134,7 +134,7 @@ const getJSON = function (url, errMessage = 'Something went wrong') {
     return response.json();
   });
 };
-*/
+
 // Country 1
 // const getCountryData = country =>
 //   fetch(`https://restcountries.com/v3.1/name/${country}`)
@@ -300,8 +300,8 @@ btn.addEventListener('click', whereAmI);
  * Coding Challenge 2
  * Lesson 262
  */
-
-/*const wait = function (seconds) {
+/*
+const wait = function (seconds) {
   return new Promise(function (resolve) {
     setTimeout(resolve, seconds * 1000);
   });
@@ -323,7 +323,8 @@ const createImg = function (imgPath) {
     });
   });
 };
-
+*/
+/*
 let currentImage;
 createImg('img/img-1.jpg')
   .then(img => {
@@ -346,17 +347,18 @@ createImg('img/img-1.jpg')
   .catch(err => console.error(err));
 */
 /** Getting the user current position */
-const getPosition = function () {
+/*const getPosition = function () {
   return new Promise(function (resolve, reject) {
     navigator.geolocation.getCurrentPosition(resolve, reject);
   });
 };
+*/
 /**
  *
  * @param {*} country The url of the country (string)
  * @returns {string} - The name of the country
  */
-
+/*
 const whereAmI = async function () {
   try {
     //Geolocatoin
@@ -370,7 +372,6 @@ const whereAmI = async function () {
 
     if (!resGeo.ok) throw new Error('Problem getting location data');
     const dataGeo = await resGeo.json();
-    console.log(dataGeo);
 
     //Country data
     const res = await fetch(
@@ -378,11 +379,107 @@ const whereAmI = async function () {
     );
     if (!res.ok) throw new Error('Problem getting country');
     const data = await res.json();
-    console.log(data);
     renderCountry(data[0]);
+
+    return `You are in ${dataGeo.city}, ${dataGeo.countryName}`;
   } catch (error) {
     console.error(`err ${error} 💥`);
     renderError(`💥 ${err.message}`);
   }
 };
-whereAmI();
+// whereAmI();
+// const city = whereAmI();
+// console.log(city);
+// whereAmI().then(city => console.log(city));
+
+(async () => {
+  try {
+    const city = await whereAmI();
+    console.log(`${city}`);
+  } catch (error) {
+    console.error(`${error.message}`);
+  }
+})();
+*/
+/*
+const get3Countries = async function (c1, c2, c3) {
+  try {
+    const [data1] = await getJSON(`https://restcountries.com/v3.1/name/${c1}`);
+    const [data2] = await getJSON(`https://restcountries.com/v3.1/name/${c2}`);
+    const [data3] = await getJSON(`https://restcountries.com/v3.1/name/${c3}`);
+    console.log(data1.capital, data2.capital, data3.capital);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+get3Countries('Ghana', 'portugal', 'canada');
+*/
+
+////////////// Promise.race()  ////////////
+/*
+(async function () {
+  const res = await Promise.race([
+    getJSON(`https://restcountries.com/v3.1/name/ghana`),
+    getJSON(`https://restcountries.com/v3.1/name/egypt`),
+    getJSON(`https://restcountries.com/v3.1/name/mexico`),
+  ]);
+  console.log(res[0]);
+})();
+*/
+
+// createImg('img/img-1.jpg')
+//   .then(img => {
+//     currentImage = img;
+//     console.log('Image 1 loaded');
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImage.style.display = 'none';
+//     return createImg('img/img-2.jpg');
+//   })
+//   .then(img => {
+//     currentImage = img;
+//     console.log('Image 2 loaded');
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImage.style.display = 'none';
+//   })
+//   .catch(err => console.error(err));
+
+/*
+const loadNPause = async function () {
+  try {
+    //Load image 1
+    let img = await createImg('img/img-1.jpg');
+    console.log('Image 1loaded');
+    await wait(2);
+    img.style.display = 'none';
+
+    //Load image 2
+    img = await createImg('img/img-2.jpg');
+    console.log('Image 2loaded');
+    await wait(2);
+    img.style.display = 'none';
+  } catch (error) {
+    console.error(error);
+  }
+};
+*/
+// loadNPause();
+
+// Part 2
+/*
+const loadAll = async function (imgArr) {
+  try {
+    const imgs = imgArr.map(async img => await createImg(img));
+    const imgsEl = await Promise.all(imgs);
+    console.log(imgsEl);
+    imgsEl.forEach(img => img.classList.add('parallel'));
+  } catch (error) {
+    console.log(error);
+  }
+};
+loadAll(['img/img-1.jpg', 'img/img-2.jpg', 'img/img-3.jpg']);
+*/
