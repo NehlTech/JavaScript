@@ -1,4 +1,6 @@
-productGrid = document.querySelector(".js-products-grid");
+import { cart } from "../data/cart.js";
+
+const productGrid = document.querySelector(".js-products-grid");
 // cartButton = document.querySelectorAll(".js-add-to-cart");
 
 // const products = [
