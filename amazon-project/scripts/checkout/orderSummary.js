@@ -6,6 +6,7 @@ import {
   deliveryOptions,
   getDeliveryOption,
 } from "../../data/deliveryOptions.js";
+import { renderPaymentSummary } from "./paymentSummary.js";
 
 // const todayDate = dayjs();
 // const deliveryDate = todayDate.add(7, "days");
@@ -118,6 +119,7 @@ export const renderOrderSummary = () => {
         `.js-cart-item-container-${productId}`
       );
       container.remove();
+      renderPaymentSummary();
     });
   });
 
@@ -126,6 +128,7 @@ export const renderOrderSummary = () => {
       const { productId, deliveryOptionId } = button.dataset;
       updateDeliveryOption(productId, deliveryOptionId);
       renderOrderSummary();
+      renderPaymentSummary();
     });
   });
 };
